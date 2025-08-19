@@ -1,6 +1,9 @@
 package tech.getarrays.employeemanager.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.io.Serializable;
 
@@ -10,10 +13,20 @@ public class Employee implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
+
+    @NotBlank(message = "Name is required.")
     private String name;
+
+    @Email(message = "Invalid Email Format.")
+    @NotBlank(message = "Email is required.")
     private String email;
+
+    @NotBlank(message = "Job Title is required.")
     private String jobTitle;
+
+    @Pattern(regexp = "^01\\d{9}$", message = "Phone number must start with '01' and be exactly 11 digits")
     private String phone;
+
     private String imageUrl;
     @Column(nullable = false, updatable = false)
     private String employeeCode;
