@@ -5,9 +5,18 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarColor02">
      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li class="nav-item active" *ngIf="isAdmin">
            <a class="nav-link" (click)="onOpenModal(null, 'add')">Add Employee <span class="sr-only">(current)</span></a>
         </li>
+        <li class="nav-item" *ngIf="!isAdmin">
+           <a class="nav-link" (click)="onOpenModal(null, 'login')">Login</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin">
+           <span class="nav-link text-white">Welcome, {{ currentUser }}</span>
+        </li>
+         <li class="nav-item" *ngIf="isAdmin">
+            <a class="nav-link" (click)="onLogout()">Logout</a>
+         </li>
      </ul>
      <form class="form-inline my-2 my-lg-0">
         <input type="search" (ngModelChange)="searchEmployees(key.value)" #key="ngModel" ngModel
@@ -34,11 +43,40 @@
         </ul>
         <div class="card-body">
            <div class="float-right btn-group btn-group-sm">
-              <a (click)="onOpenModal(employee, 'edit')" class="btn btn-primary tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
-              <a (click)="onOpenModal(employee, 'delete')" class="btn btn-secondary tooltips" data-placement="top" data-original-title="Delete"><i class="fa fa-times"></i></a>
+              <a *ngIf="isAdmin" (click)="onOpenModal(employee, 'edit')" class="btn btn-primary tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-pencil"></i> </a>
+              <a *ngIf="isAdmin" (click)="onOpenModal(employee, 'delete')" class="btn btn-secondary tooltips" data-placement="top" data-original-title="Delete"><i class="fa fa-times"></i></a>
            </div>
         </div>
      </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="login-modal-close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onLogin()">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input [(ngModel)]="loginUsername" name="username" type="text" class="form-control" required />
+
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input [(ngModel)]="loginPassword" name="password" type="password" class="form-control" required />
+          </div>
+          <div *ngIf="loginError" class="alert alert-danger mt-2">{{ loginError }}</div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -98,25 +136,25 @@
            <form #editForm="ngForm">
               <div class="form-group">
                  <label for="name">Name</label>
-                 <input type="text" ngModel="{{editEmployee.name}}" name="name" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Name">
+                 <input type="text" [(ngModel)]="editEmployee.name" name="name" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Name">
               </div>
-              <input type="hidden" ngModel="{{editEmployee.id}}" name="id" class="form-control" id="id" placeholder="Email">
-              <input type="hidden" ngModel="{{editEmployee.employeeCode}}" name="userCode" class="form-control" id="userCode" placeholder="Email">
+              <input type="hidden" [(ngModel)]="editEmployee.id" name="id" class="form-control" id="id" placeholder="Email">
+              <input type="hidden" [(ngModel)]="editEmployee.employeeCode" name="userCode" class="form-control" id="userCode" placeholder="Email">
               <div class="form-group">
                  <label for="email">Email Address</label>
-                 <input type="email" ngModel="{{editEmployee.email}}" name="email" class="form-control" id="email" placeholder="Email">
+                 <input type="email" [(ngModel)]="editEmployee.email" name="email" class="form-control" id="email" placeholder="Email">
               </div>
               <div class="form-group">
                  <label for="phone">Job title</label>
-                 <input type="text" ngModel="{{editEmployee.jobTitle}}" name="jobTitle" class="form-control" id="jobTitle" placeholder="Job title">
+                 <input type="text" [(ngModel)]="editEmployee.jobTitle" name="jobTitle" class="form-control" id="jobTitle" placeholder="Job title">
               </div>
               <div class="form-group">
                  <label for="phone">Phone</label>
-                 <input type="text" ngModel="{{editEmployee.phone}}" name="phone" class="form-control" id="phone" name="phone" placeholder="Phone">
+                 <input type="text" [(ngModel)]="editEmployee.phone" name="phone" class="form-control" id="phone" name="phone" placeholder="Phone">
               </div>
               <div class="form-group">
                  <label for="phone">Image URL</label>
-                 <input type="text" ngModel="{{editEmployee.imageUrl}}" name="imageUrl" class="form-control" id="imageUrl" placeholder="Image URL">
+                 <input type="text" [(ngModel)]="editEmployee.imageUrl" name="imageUrl" class="form-control" id="imageUrl" placeholder="Image URL">
               </div>
               <div class="modal-footer">
                  <button type="button" id="" data-dismiss="modal" class="btn btn-secondary">Close</button>

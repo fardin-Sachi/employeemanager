@@ -3,6 +3,7 @@ import { Employee } from './employee';
 import { EmployeeService } from './employee.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,12 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  public title: string = 'Employee Manager'
+
+  public loginUsername: string = ''
+  public loginPassword: string = ''
+  public loginError: string = ''
+
   public employees: Employee[] = [];
   public editEmployee: Employee = {
     id: 0,
@@ -30,9 +37,48 @@ export class AppComponent implements OnInit {
     employeeCode: ''
   };
 
-  constructor(private employeeService: EmployeeService){}
+  constructor(private employeeService: EmployeeService, private authService: AuthService){}
 
   ngOnInit() {
+    this.getEmployees();
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.isLoggedIn()
+  }
+
+  public onLogin(): void {
+    if (!this.loginUsername || !this.loginPassword) {
+      this.loginError = 'Username and password are required.';
+      return;
+    }
+
+    const loginPayload = {
+      username: this.loginUsername.trim(),
+      password: this.loginPassword
+    };
+
+    this.authService.login(loginPayload).subscribe({
+      next: () => {
+        this.authService.setLoginState(this.loginUsername, this.loginPassword); // ✅ This sets the authHeader
+        this.loginError = '';
+        this.getEmployees();
+        document.getElementById('login-modal-close')?.click();
+        this.authService.setLoginState(this.loginUsername, this.loginPassword)
+      },
+      error: () => {
+        this.loginError = 'Invalid credentials. Please try again.';
+      }
+    });
+  }
+
+
+  get currentUser(): string | null {
+    return this.authService.getUsername();
+  }
+ 
+  public onLogout(): void {
+    this.authService.logout();
     this.getEmployees();
   }
 
@@ -49,6 +95,10 @@ export class AppComponent implements OnInit {
   }
 
   public onAddEmployee(addForm: NgForm): void {
+    if (!this.isAdmin) {
+      alert('Access denied: Only admins can add employees.');
+      return;
+    }
     document.getElementById('add-employee-form')?.click();
     this.employeeService.addEmployee(addForm.value).subscribe(
       (response: Employee) => {
@@ -64,6 +114,10 @@ export class AppComponent implements OnInit {
   }
 
   public onUpdateEmployee(employee: Employee): void {
+    if (!this.isAdmin) {
+      alert('Access denied: Only admins can add employees.');
+      return;
+    }
     this.employeeService.updateEmployee(employee).subscribe(
       (response: Employee) => {
         console.log(response);
@@ -76,6 +130,10 @@ export class AppComponent implements OnInit {
   }
 
   public onDeleteEmployee(employeeId: number): void {
+    if (!this.isAdmin) {
+      alert('Access denied: Only admins can add employees.');
+      return;
+    }
     this.employeeService.deleteEmployee(employeeId).subscribe(
       (response: void) => {
         console.log(response);
@@ -99,7 +157,7 @@ export class AppComponent implements OnInit {
       }
     }
     this.employees = results;
-    if (results.length === 0 || !key) {
+    if (!key) {
       this.getEmployees();
     }
   }
@@ -110,6 +168,9 @@ export class AppComponent implements OnInit {
     button.type = 'button';
     button.style.display = 'none';
     button.setAttribute('data-toggle', 'modal');
+    if(mode === 'login'){
+      button.setAttribute('data-target', '#loginModal')
+    }
     if (mode === 'add') {
       button.setAttribute('data-target', '#addEmployeeModal');
     }

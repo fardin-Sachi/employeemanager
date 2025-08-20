@@ -29,6 +29,11 @@ public class EmployeeService {
     }
 
     public Employee updateEmployee(Employee employee) {
+        Long id = employee.getId();
+        if (id == null || !employeeRepo.existsById(id)) {
+            throw new UserNotFoundException("Cannot update. Employee with ID " + id + " does not exist.");
+        }
+
         return employeeRepo.save(employee);
     }
 
