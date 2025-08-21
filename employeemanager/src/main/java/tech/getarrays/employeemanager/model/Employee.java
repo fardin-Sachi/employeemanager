@@ -8,9 +8,11 @@ import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Entity
+
 public class Employee implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_seq")
+    @SequenceGenerator(name = "employee_seq", sequenceName = "employee_seq", allocationSize = 1)
     @Column(nullable = false, updatable = false)
     private Long id;
 
