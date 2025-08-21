@@ -25,7 +25,9 @@ public class EmployeeService {
     }
 
     public List<Employee> findAllEmployees() {
-        return employeeRepo.findAll();
+        List<Employee> employees = employeeRepo.findAll();
+        employees.sort((e1, e2) -> Long.compare(e2.getId(), e1.getId()));
+        return employees;
     }
 
     public Employee updateEmployee(Employee employee) {

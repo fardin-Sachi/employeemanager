@@ -31,5 +31,4 @@ public class EmployeemanagerApplication {
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }
-
 }

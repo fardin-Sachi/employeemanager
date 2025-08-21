@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Employee } from './employee';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+// import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -39,7 +39,7 @@ export class EmployeeService {
   }
 
   public deleteEmployee(employeeId: number): Observable<void> {
-    console.log('DELETE Auth Header:', this.getAuthHeaders().get('Authorization'));
+    // console.log('DELETE Auth Header:', this.getAuthHeaders().get('Authorization'));
     return this.http.delete<void>(`${this.apiServerUrl}/employee/delete/${employeeId}`, {
       headers: this.getAuthHeaders()
     });

@@ -86,7 +86,7 @@ export class AppComponent implements OnInit {
     this.employeeService.getEmployees().subscribe(
       (response: Employee[]) => {
         this.employees = response;
-        console.log(this.employees);
+        // console.log(this.employees);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -102,15 +102,22 @@ export class AppComponent implements OnInit {
     document.getElementById('add-employee-form')?.click();
     this.employeeService.addEmployee(addForm.value).subscribe(
       (response: Employee) => {
-        console.log(response);
+        // console.log(response);
         this.getEmployees();
         addForm.reset();
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
-        addForm.reset();
+        if(error.status === 400 && error.error){
+          const errorMsg = typeof error.error === 'string'?
+            error.error
+            : Object.values(error.error).join('\n')
+          alert(errorMsg)
+        } else {
+          alert('Something went wrong: ' + error.message);
+          // addForm.reset();
+        }
       }
-    );
+    )
   }
 
   public onUpdateEmployee(employee: Employee): void {
@@ -120,11 +127,18 @@ export class AppComponent implements OnInit {
     }
     this.employeeService.updateEmployee(employee).subscribe(
       (response: Employee) => {
-        console.log(response);
+        // console.log(response);
         this.getEmployees();
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
+        if(error.status === 400 && error.error){
+          const errorMsg = typeof error.error === 'string'?
+            error.error
+            : Object.values(error.error).join('\n')
+          alert(errorMsg)
+        } else {
+          alert('Something went wrong: ' + error.message)
+        }
       }
     );
   }
@@ -136,7 +150,7 @@ export class AppComponent implements OnInit {
     }
     this.employeeService.deleteEmployee(employeeId).subscribe(
       (response: void) => {
-        console.log(response);
+        // console.log(response);
         this.getEmployees();
       },
       (error: HttpErrorResponse) => {
@@ -146,7 +160,7 @@ export class AppComponent implements OnInit {
   }
 
   public searchEmployees(key: string): void {
-    console.log(key);
+    // console.log(key);
     const results: Employee[] = [];
     for (const employee of this.employees) {
       if (employee.name.toLowerCase().indexOf(key.toLowerCase()) !== -1
